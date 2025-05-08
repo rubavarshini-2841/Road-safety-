@@ -1,0 +1,97 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report
+from flask import Flask, request, jsonify
+
+# 1. Load and Clean Data
+def load_and_clean_data(filepath):
+    df = pd.read_csv(filepath)
+    df.dropna(inplace=True)
+
+    # Convert time column to datetime and extract hour
+    df['Accident_Time'] = pd.to_datetime(df['Accident_Time'], errors='coerce')
+    df = df.dropna(subset=['Accident_Time'])
+    df['Hour'] = df['Accident_Time'].dt.hour
+    return df
+
+# 2. Analyze Accident Data
+def analyze_data(df):
+    sns.countplot(x='Hour', data=df)
+    plt.title("Accidents by Hour of Day")
+    plt.xlabel("Hour")
+    plt.ylabel("Number of Accidents")
+    plt.tight_layout()
+    plt.show()
+
+# 3. Train ML Model
+def train_model(df):
+    features = df[['Hour', 'Weather', 'Road_Condition']]
+    labels = df['Severity']
+    features = pd.get_dummies(features)
+
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
+    model = RandomForestClassifier(n_estimators=100)
+    model.fit(X_train, y_train)
+
+    predictions = model.predict(X_test)
+    print("Model Evaluation:\n", classification_report(y_test, predictions))
+
+    return model, features.columns
+
+# 4. Flask API for Prediction
+app = Flask(__name__)
+model = None
+feature_columns = None
+
+@app.route('/predict', methods=['POST'import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report
+from flask import Flask, request, jsonify
+
+# 1. Load and Clean Data
+def load_and_clean_data(filepath):
+    df = pd.read_csv(filepath)
+    df.dropna(inplace=True)
+
+    # Convert time column to datetime and extract hour
+    df['Accident_Time'] = pd.to_datetime(df['Accident_Time'], errors='coerce')
+    df = df.dropna(subset=['Accident_Time'])
+    df['Hour'] = df['Accident_Time'].dt.hour
+    return df
+
+# 2. Analyze Accident Data
+def analyze_data(df):
+    sns.countplot(x='Hour', data=df)
+    plt.title("Accidents by Hour of Day")
+    plt.xlabel("Hour")
+    plt.ylabel("Number of Accidents")
+    plt.tight_layout()
+    plt.show()
+
+# 3. Train ML Model
+def train_model(df):
+    features = df[['Hour', 'Weather', 'Road_Condition']]
+    labels = df['Severity']
+    features = pd.get_dummies(features)
+
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
+    model = RandomForestClassifier(n_estimators=100)
+    model.fit(X_train, y_train)
+
+    predictions = model.predict(X_test)
+    print("Model Evaluation:\n", classification_report(y_test, predictions))
+
+    return model, features.columns
+
+# 4. Flask API for Prediction
+app = Flask(__name__)
+model = None
+feature_columns = None
+
+@app.route('/predict', methods=['POST'
